@@ -758,8 +758,83 @@
             opacity: 0.9;
             transform: translateY(-2px);
         }
+    </style>
+</head>
 
-        </head><body>< !-- Background orbs --><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div>< !-- Toast --><div class="toast" id="toast">⚠️ Please answer all questions before submitting.</div><div class="page">< !-- ── FORM SECTION ───────────────────────────── --><div id="formSection"><div class="hero"><div class="hero-badge"><span>🧠</span><span>Psychological Assessment</span></div><h1>Adult Attachment<br />Style Quiz</h1><p>Discover how you connect with others. Answer 18 short questions honestly — there are no right or wrong answers.</p></div>< !-- Progress --><div class="progress-wrap"><span class="progress-label">Progress</span><div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill"></div></div><span class="progress-count" id="progressCount">0 / 18</span></div>< !-- Page indicator --><div class="page-indicator" id="pageIndicator"><div class="page-dot active" data-page="0"></div><div class="page-dot" data-page="1"></div><div class="page-dot" data-page="2"></div><span class="page-label" id="pageLabel">Part 1 of 3</span></div>< !-- Pages container --><form id="attachmentForm"><div class="pages-wrapper" id="pagesWrapper"><div class="quiz-page active" id="quizPage0"></div><div class="quiz-page" id="quizPage1"></div><div class="quiz-page" id="quizPage2"></div></div>< !-- Navigation buttons --><div class="nav-wrap"><button type="button" class="btn-back" id="btnBack" onclick="changePage(-1)" style="visibility:hidden">← Back</button><button type="button" class="btn-next" id="btnNext" onclick="changePage(1)">Next →</button><button type="submit" class="btn-submit" id="submitBtn" style="display:none"><span>Discover My Attachment Style</span><span>✨</span></button></div></form></div>< !-- ── RESULTS SECTION ─────────────────────────── --><div id="results"></div></div>< !-- /.page -->< !-- Footer credit --><div class="footer-credit"><a href="https://shivapranav.com" target="_blank" rel="noopener"><span>⚡</span>Made by Shiva Pranav </a></div><script> // ─────────────────────────────────────────────────────────────
+<body>
+
+    <!-- Background orbs -->
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">⚠️ Please answer all questions before submitting.</div>
+
+    <div class="page">
+
+        <!-- ── FORM SECTION ───────────────────────────── -->
+        <div id="formSection">
+            <div class="hero">
+                <div class="hero-badge">
+                    <span>🧠</span>
+                    <span>Psychological Assessment</span>
+                </div>
+                <h1>Adult Attachment<br />Style Quiz</h1>
+                <p>Discover how you connect with others. Answer 18 short questions honestly — there are no right or wrong answers.</p>
+            </div>
+
+            <!-- Progress -->
+            <div class="progress-wrap">
+                <span class="progress-label">Progress</span>
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" id="progressFill"></div>
+                </div>
+                <span class="progress-count" id="progressCount">0 / 18</span>
+            </div>
+
+            <!-- Page indicator -->
+            <div class="page-indicator" id="pageIndicator">
+                <div class="page-dot active" data-page="0"></div>
+                <div class="page-dot" data-page="1"></div>
+                <div class="page-dot" data-page="2"></div>
+                <span class="page-label" id="pageLabel">Part 1 of 3</span>
+            </div>
+
+            <!-- Pages container -->
+            <form id="attachmentForm">
+                <div class="pages-wrapper" id="pagesWrapper">
+                    <div class="quiz-page active" id="quizPage0"></div>
+                    <div class="quiz-page" id="quizPage1"></div>
+                    <div class="quiz-page" id="quizPage2"></div>
+                </div>
+
+                <!-- Navigation buttons -->
+                <div class="nav-wrap">
+                    <button type="button" class="btn-back" id="btnBack" onclick="changePage(-1)" style="visibility:hidden">← Back</button>
+                    <button type="button" class="btn-next" id="btnNext" onclick="changePage(1)">Next →</button>
+                    <button type="submit" class="btn-submit" id="submitBtn" style="display:none">
+                        <span>Discover My Attachment Style</span>
+                        <span>✨</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- ── RESULTS SECTION ─────────────────────────── -->
+        <div id="results"></div>
+
+    </div><!-- /.page -->
+
+    <!-- Footer credit -->
+    <div class="footer-credit">
+        <a href="https://shivapranav.com" target="_blank" rel="noopener">
+            <span>⚡</span> Made by Shiva Pranav
+        </a>
+    </div>
+
+    <script>
+
 
         // DATA: Adult Attachment Scale (Collins & Read, 1990)
         // subscale: C = Close  |  D = Depend  |  A = Anxiety
@@ -996,13 +1071,6 @@
             document.getElementById('progressCount').textContent = count + ' / ' + QUESTIONS.length;
         }
 
-            / $ {
-                QUESTIONS.length
-            }
-
-            `;
-        }
-
         // ─────────────────────────────────────────────────────────────
         // SCORING
         // ─────────────────────────────────────────────────────────────
@@ -1205,74 +1273,74 @@
         // RENDER RESULTS
         // ─────────────────────────────────────────────────────────────
         function renderResults(data, closeScore, dependScore, anxietyScore) {
-            document.getElementById('formSection').style.display='none';
-            const res=document.getElementById('results');
-            res.style.display='block';
+            document.getElementById('formSection').style.display = 'none';
+            const res = document.getElementById('results');
+            res.style.display = 'block';
 
-            const pct=v=>Math.round(((v - 1) / 4) * 100);
+            const pct = v => Math.round(((v - 1) / 4) * 100);
 
-            res.innerHTML=` <div class="result-header ${data.className}"><span class="result-emoji">$ {
-                data.emoji
-            }
+            res.innerHTML = `
+              <div class="result-header ${data.className}">
+                <span class="result-emoji">${data.emoji}</span>
+                <h2>Your Attachment Style</h2>
+                <div class="style-name">${data.name}</div>
+                <p class="result-desc">${data.desc}</p>
+              </div>
 
-            </span><h2>Your Attachment Style</h2><div class="style-name">$ {
-                data.name
-            }
+              <!-- Score bars -->
+              <div class="scores-card">
+                <h3>📊 Your Subscale Scores</h3>
+                <div class="score-row">
+                  <div class="score-meta">
+                    <span class="score-name" style="color:var(--green)">Comfort with Closeness</span>
+                    <span class="score-val">${closeScore.toFixed(1)} / 5</span>
+                  </div>
+                  <div class="score-bg"><div class="score-fill" id="fill-close" style="width:0%;background:var(--green)"></div></div>
+                </div>
+                <div class="score-row">
+                  <div class="score-meta">
+                    <span class="score-name" style="color:var(--teal)">Comfort with Dependence</span>
+                    <span class="score-val">${dependScore.toFixed(1)} / 5</span>
+                  </div>
+                  <div class="score-bg"><div class="score-fill" id="fill-depend" style="width:0%;background:var(--teal)"></div></div>
+                </div>
+                <div class="score-row">
+                  <div class="score-meta">
+                    <span class="score-name" style="color:var(--rose)">Relationship Anxiety</span>
+                    <span class="score-val">${anxietyScore.toFixed(1)} / 5</span>
+                  </div>
+                  <div class="score-bg"><div class="score-fill" id="fill-anxiety" style="width:0%;background:var(--rose)"></div></div>
+                </div>
+              </div>
 
-            </div><p class="result-desc">$ {
-                data.desc
-            }
+              <!-- Action card -->
+              <div class="action-card ${data.cardClass}">
+                <h3>${data.actionTitle}</h3>
+                <p class="subtitle">${data.actionSubtitle}</p>
+                ${data.actions.map(a => `
+                  <div class="action-item">
+                    <div class="action-icon">${a.icon}</div>
+                    <div class="action-text">
+                      <div class="action-title">${a.title}</div>
+                      <div class="action-body">${a.body}</div>
+                    </div>
+                  </div>`).join('')}
+              </div>
 
-            </p></div>< !-- Score bars --><div class="scores-card"><h3>📊 Your Subscale Scores</h3><div class="score-row"><div class="score-meta"><span class="score-name" style="color:var(--green)">Comfort with Closeness</span><span class="score-val">$ {
-                closeScore.toFixed(1)
-            }
+              <div class="submit-wrap">
+                <button class="btn-retake" onclick="location.reload()">↩ Retake the Quiz</button>
+              </div>`;
 
-            / 5</span></div><div class="score-bg"><div class="score-fill" id="fill-close" style="width:0%;background:var(--green)"></div></div></div><div class="score-row"><div class="score-meta"><span class="score-name" style="color:var(--teal)">Comfort with Dependence</span><span class="score-val">$ {
-                dependScore.toFixed(1)
-            }
-
-            / 5</span></div><div class="score-bg"><div class="score-fill" id="fill-depend" style="width:0%;background:var(--teal)"></div></div></div><div class="score-row"><div class="score-meta"><span class="score-name" style="color:var(--rose)">Relationship Anxiety</span><span class="score-val">$ {
-                anxietyScore.toFixed(1)
-            }
-
-            / 5</span></div><div class="score-bg"><div class="score-fill" id="fill-anxiety" style="width:0%;background:var(--rose)"></div></div></div></div>< !-- Action card --><div class="action-card ${data.cardClass}"><h3>$ {
-                data.actionTitle
-            }
-
-            </h3><p class="subtitle">$ {
-                data.actionSubtitle
-            }
-
-            </p>$ {
-                data.actions.map(a=> ` <div class="action-item" > <div class="action-icon" >$ {
-                        a.icon
-                    }
-
-                    </div> <div class="action-text" > <div class="action-title" >$ {
-                        a.title
-                    }
-
-                    </div> <div class="action-body" >$ {
-                        a.body
-                    }
-
-                    </div> </div> </div> `).join('')
-            }
-
-            </div><div class="submit-wrap"><button class="btn-retake" onclick="location.reload()">↩ Retake the Quiz</button></div>`;
-
-            // Animate score bars after a tick (so transition fires)
-            requestAnimationFrame(()=> {
-                    requestAnimationFrame(()=> {
-                            document.getElementById('fill-close').style.width=pct(closeScore) + '%';
-                            document.getElementById('fill-depend').style.width=pct(dependScore) + '%';
-                            document.getElementById('fill-anxiety').style.width=pct(anxietyScore) + '%';
-                        });
+            // Animate score bars after a tick
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    document.getElementById('fill-close').style.width = pct(closeScore) + '%';
+                    document.getElementById('fill-depend').style.width = pct(dependScore) + '%';
+                    document.getElementById('fill-anxiety').style.width = pct(anxietyScore) + '%';
                 });
-
-            res.scrollIntoView({
-                behavior: 'smooth', block: 'start'
             });
+
+            res.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
         // ─────────────────────────────────────────────────────────────
