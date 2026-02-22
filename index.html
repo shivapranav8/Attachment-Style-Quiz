@@ -556,6 +556,35 @@
             color: var(--accent2);
         }
 
+        /* ─── Footer credit ─────────────────────────────── */
+        .footer-credit {
+            text-align: center;
+            margin-top: 40px;
+            padding-bottom: 32px;
+        }
+
+        .footer-credit a {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--muted);
+            text-decoration: none;
+            padding: 8px 18px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: var(--card);
+            transition: all 0.2s ease;
+            letter-spacing: 0.02em;
+        }
+
+        .footer-credit a:hover {
+            border-color: var(--accent);
+            color: var(--accent2);
+            box-shadow: 0 0 16px rgba(124, 111, 239, 0.2);
+        }
+
         /* ─── Validation toast ─────────────────────────── */
         .toast {
             position: fixed;
@@ -645,6 +674,13 @@
         <div id="results"></div>
 
     </div><!-- /.page -->
+
+    <!-- Footer credit -->
+    <div class="footer-credit">
+        <a href="https://shivapranav.com" target="_blank" rel="noopener">
+            <span>⚡</span> Made by Shiva Pranav
+        </a>
+    </div>
 
     <script>
         // ─────────────────────────────────────────────────────────────
