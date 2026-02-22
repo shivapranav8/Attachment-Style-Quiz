@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Adult Attachment Style Quiz</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #0d0f1a;
+            --card: #161929;
+            --card2: #1e2340;
+            --border: rgba(255, 255, 255, 0.07);
+            --accent: #7c6fef;
+            --accent2: #a78bfa;
+            --teal: #38bdf8;
+            --rose: #f472b6;
+            --amber: #fbbf24;
+            --green: #34d399;
+            --text: #e2e8f5;
+            --muted: #8892a4;
+            --radius: 18px;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ─── Background orbs ────────────────────────────── */
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.18;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .orb-1 {
+            width: 600px;
+            height: 600px;
+            background: var(--accent);
+            top: -200px;
+            left: -200px;
+        }
+
+        .orb-2 {
+            width: 500px;
+            height: 500px;
+            background: var(--teal);
+            bottom: -150px;
+            right: -150px;
+        }
+
+        .orb-3 {
+            width: 350px;
+            height: 350px;
+            background: var(--rose);
+            top: 40%;
+            left: 55%;
+        }
+
+        /* ─── Page wrapper ─────────────────────────────── */
+        .page {
+            position: relative;
+            z-index: 1;
+            padding: 24px 16px 80px;
+            max-width: 760px;
+            margin: 0 auto;
+        }
+
+        /* ─── Hero header ──────────────────────────────── */
+        .hero {
+            text-align: center;
+            padding: 64px 24px 48px;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(124, 111, 239, 0.15);
+            border: 1px solid rgba(124, 111, 239, 0.35);
+            color: var(--accent2);
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 6px 14px;
+            border-radius: 999px;
+            margin-bottom: 24px;
+        }
+
+        .hero h1 {
+            font-size: clamp(28px, 6vw, 52px);
+            font-weight: 800;
+            line-height: 1.15;
+            background: linear-gradient(135deg, #e2e8f5 30%, var(--accent2) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 16px;
+        }
+
+        .hero p {
+            color: var(--muted);
+            font-size: 16px;
+            line-height: 1.7;
+            max-width: 520px;
+            margin: 0 auto;
+        }
+
+        /* ─── Progress bar ─────────────────────────────── */
+        .progress-wrap {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px 28px;
+            margin-bottom: 32px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .progress-label {
+            font-size: 13px;
+            color: var(--muted);
+            white-space: nowrap;
+        }
+
+        .progress-bar-bg {
+            flex: 1;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.07);
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--accent), var(--teal));
+            border-radius: 999px;
+            transition: width 0.4s cubic-bezier(.4, 0, .2, 1);
+        }
+
+        .progress-count {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--accent2);
+            white-space: nowrap;
+        }
+
+        /* ─── Question card ────────────────────────────── */
+        .question-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 32px 28px;
+            margin-bottom: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .question-card.answered {
+            border-color: rgba(124, 111, 239, 0.35);
+        }
+
+        .q-number {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--accent2);
+            margin-bottom: 10px;
+        }
+
+        .q-text {
+            font-size: 16px;
+            font-weight: 500;
+            line-height: 1.6;
+            color: var(--text);
+            margin-bottom: 24px;
+        }
+
+        /* ─── Likert scale ─────────────────────────────── */
+        .likert {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+        }
+
+        .likert-option {
+            position: relative;
+        }
+
+        .likert-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .likert-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            padding: 10px 4px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            background: var(--card2);
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .likert-btn:hover {
+            border-color: var(--accent);
+            background: rgba(124, 111, 239, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .likert-option input:checked+.likert-btn {
+            border-color: var(--accent);
+            background: rgba(124, 111, 239, 0.2);
+            box-shadow: 0 0 0 3px rgba(124, 111, 239, 0.15), 0 4px 16px rgba(124, 111, 239, 0.25);
+        }
+
+        .likert-num {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--muted);
+            background: rgba(255, 255, 255, 0.05);
+            transition: all 0.2s;
+        }
+
+        .likert-option input:checked+.likert-btn .likert-num {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .likert-label {
+            font-size: 10px;
+            line-height: 1.3;
+            color: var(--muted);
+        }
+
+        .likert-option input:checked+.likert-btn .likert-label {
+            color: var(--accent2);
+        }
+
+        /* ─── Scale legend ─────────────────────────────── */
+        .scale-legend {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        /* ─── Submit button ────────────────────────────── */
+        .submit-wrap {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .btn-submit {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--teal) 100%);
+            color: #fff;
+            font-size: 16px;
+            font-weight: 700;
+            padding: 16px 48px;
+            border-radius: 999px;
+            border: none;
+            cursor: pointer;
+            transition: opacity 0.3s, transform 0.2s, box-shadow 0.3s;
+            box-shadow: 0 8px 32px rgba(124, 111, 239, 0.4);
+            letter-spacing: 0.02em;
+        }
+
+        .btn-submit:hover {
+            opacity: 0.92;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(124, 111, 239, 0.5);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* ─── Results section ──────────────────────────── */
+        #results {
+            display: none;
+            animation: fadeUp 0.6s cubic-bezier(.4, 0, .2, 1) both;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-header {
+            text-align: center;
+            padding: 48px 24px 32px;
+        }
+
+        .result-emoji {
+            font-size: 64px;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .result-header h2 {
+            font-size: clamp(22px, 5vw, 38px);
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .result-header .style-name {
+            display: inline-block;
+            font-size: clamp(18px, 4vw, 28px);
+            font-weight: 700;
+            padding: 4px 20px;
+            border-radius: 999px;
+            margin-bottom: 16px;
+        }
+
+        .result-desc {
+            color: var(--muted);
+            font-size: 15px;
+            line-height: 1.7;
+            max-width: 560px;
+            margin: 0 auto;
+        }
+
+        /* Style-specific colors */
+        .secure .style-name {
+            background: rgba(52, 211, 153, 0.15);
+            color: var(--green);
+            border: 1px solid rgba(52, 211, 153, 0.3);
+        }
+
+        .anxious .style-name {
+            background: rgba(244, 114, 182, 0.15);
+            color: var(--rose);
+            border: 1px solid rgba(244, 114, 182, 0.3);
+        }
+
+        .avoidant .style-name {
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--teal);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+
+        /* ─── Score bars ───────────────────────────────── */
+        .scores-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 28px;
+            margin-bottom: 20px;
+        }
+
+        .scores-card h3 {
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 20px;
+        }
+
+        .score-row {
+            margin-bottom: 18px;
+        }
+
+        .score-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .score-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 8px;
+        }
+
+        .score-name {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .score-val {
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .score-bg {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .score-fill {
+            height: 100%;
+            border-radius: 999px;
+            transition: width 1s cubic-bezier(.4, 0, .2, 1) 0.4s;
+        }
+
+        /* ─── Actionable advice card ───────────────────── */
+        .action-card {
+            border-radius: var(--radius);
+            padding: 28px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: inherit;
+            filter: blur(60px);
+            opacity: 0.4;
+            z-index: -1;
+        }
+
+        .action-card h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .action-card .subtitle {
+            font-size: 13px;
+            margin-bottom: 20px;
+            opacity: 0.7;
+        }
+
+        .action-item {
+            display: flex;
+            gap: 14px;
+            margin-bottom: 16px;
+            padding: 16px;
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.25);
+        }
+
+        .action-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .action-icon {
+            font-size: 22px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .action-text {
+            flex: 1;
+        }
+
+        .action-title {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .action-body {
+            font-size: 13px;
+            line-height: 1.6;
+            opacity: 0.8;
+        }
+
+        /* avoidant card */
+        .avoidant-card {
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.12), rgba(124, 111, 239, 0.12));
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            color: var(--text);
+        }
+
+        /* anxious card */
+        .anxious-card {
+            background: linear-gradient(135deg, rgba(244, 114, 182, 0.12), rgba(251, 191, 36, 0.08));
+            border: 1px solid rgba(244, 114, 182, 0.25);
+            color: var(--text);
+        }
+
+        /* secure card */
+        .secure-card {
+            background: linear-gradient(135deg, rgba(52, 211, 153, 0.12), rgba(56, 189, 248, 0.08));
+            border: 1px solid rgba(52, 211, 153, 0.25);
+            color: var(--text);
+        }
+
+        /* ─── Retake button ────────────────────────────── */
+        .btn-retake {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--muted);
+            font-size: 14px;
+            font-weight: 600;
+            padding: 12px 28px;
+            border-radius: 999px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 16px;
+        }
+
+        .btn-retake:hover {
+            border-color: var(--accent);
+            color: var(--accent2);
+        }
+
+        /* ─── Validation toast ─────────────────────────── */
+        .toast {
+            position: fixed;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: #2a1a3e;
+            border: 1px solid var(--rose);
+            color: var(--rose);
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 999;
+            transition: transform 0.3s cubic-bezier(.4, 0, .2, 1), opacity 0.3s;
+            opacity: 0;
+            white-space: nowrap;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        @media (max-width: 500px) {
+            .likert-label {
+                display: none;
+            }
+
+            .likert-btn {
+                padding: 8px 2px;
+            }
+
+            .question-card {
+                padding: 24px 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Background orbs -->
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">⚠️ Please answer all questions before submitting.</div>
+
+    <div class="page">
+
+        <!-- ── FORM SECTION ───────────────────────────── -->
+        <div id="formSection">
+            <div class="hero">
+                <div class="hero-badge">
+                    <span>🧠</span>
+                    <span>Psychological Assessment</span>
+                </div>
+                <h1>Adult Attachment<br />Style Quiz</h1>
+                <p>Discover how you connect with others. Answer 18 short questions honestly — there are no right or
+                    wrong answers.</p>
+            </div>
+
+            <!-- Progress -->
+            <div class="progress-wrap">
+                <span class="progress-label">Progress</span>
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" id="progressFill"></div>
+                </div>
+                <span class="progress-count" id="progressCount">0 / 18</span>
+            </div>
+
+            <!-- Questions rendered by JS -->
+            <form id="attachmentForm">
+                <div id="questionsContainer"></div>
+                <div class="submit-wrap">
+                    <button type="submit" class="btn-submit" id="submitBtn">
+                        <span>Discover My Attachment Style</span>
+                        <span>✨</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- ── RESULTS SECTION ─────────────────────────── -->
+        <div id="results"></div>
+
+    </div><!-- /.page -->
+
+    <script>
+        // ─────────────────────────────────────────────────────────────
+        // DATA: Adult Attachment Scale (Collins & Read, 1990)
+        // subscale: C = Close  |  D = Depend  |  A = Anxiety
+        // reversed: true = item is reverse-scored
+        // ─────────────────────────────────────────────────────────────
+        const QUESTIONS = [
+            { id: 1, text: "I find it relatively easy to get close to others.", sub: "C", reversed: false },
+            { id: 2, text: "I do not often worry about being abandoned.", sub: "A", reversed: true },
+            { id: 3, text: "I find it difficult to allow myself to depend on others.", sub: "D", reversed: true },
+            { id: 4, text: "I often worry that my partner does not really love me.", sub: "A", reversed: false },
+            { id: 5, text: "I find that others are reluctant to get as close as I would like.", sub: "C", reversed: true },
+            { id: 6, text: "I am comfortable depending on others.", sub: "D", reversed: false },
+            { id: 7, text: "I do not often worry about someone getting too close to me.", sub: "C", reversed: true },
+            { id: 8, text: "I find that people are never there when you need them.", sub: "D", reversed: true },
+            { id: 9, text: "I am somewhat uncomfortable being close to others.", sub: "C", reversed: true },
+            { id: 10, text: "I know that others will be there when I need them.", sub: "D", reversed: false },
+            { id: 11, text: "I want to get close to people, but I worry I will get hurt.", sub: "A", reversed: false },
+            { id: 12, text: "I find it difficult to fully trust others.", sub: "D", reversed: true },
+            { id: 13, text: "I am nervous when anyone gets too close emotionally.", sub: "C", reversed: true },
+            { id: 14, text: "I often wonder whether partners really care about me.", sub: "A", reversed: false },
+            { id: 15, text: "I want to merge completely with another person.", sub: "A", reversed: false },
+            { id: 16, text: "I know that my desire for closeness sometimes scares others away.", sub: "A", reversed: false },
+            { id: 17, text: "I find it easy to depend on romantic partners.", sub: "D", reversed: false },
+            { id: 18, text: "I prefer not to be emotionally close to others.", sub: "C", reversed: true },
+        ];
+
+        const LABELS = ["Not at all", "Slightly", "Somewhat", "Moderately", "Very much"];
+
+        // ─────────────────────────────────────────────────────────────
+        // RENDER QUESTIONS
+        // ─────────────────────────────────────────────────────────────
+        const container = document.getElementById('questionsContainer');
+        const answers = {};
+
+        QUESTIONS.forEach(q => {
+            const card = document.createElement('div');
+            card.className = 'question-card';
+            card.id = `card-${q.id}`;
+
+            const qNumEl = document.createElement('div');
+            qNumEl.className = 'q-number';
+            qNumEl.textContent = `Question ${q.id} of ${QUESTIONS.length}`;
+
+            const qTextEl = document.createElement('div');
+            qTextEl.className = 'q-text';
+            qTextEl.textContent = q.text;
+
+            const likertEl = document.createElement('div');
+            likertEl.className = 'likert';
+
+            [1, 2, 3, 4, 5].forEach(val => {
+                const opt = document.createElement('label');
+                opt.className = 'likert-option';
+
+                const inp = document.createElement('input');
+                inp.type = 'radio';
+                inp.name = `q${q.id}`;
+                inp.value = val;
+
+                // Click-to-deselect: if already checked, uncheck on click
+                inp.addEventListener('click', function () {
+                    if (answers[q.id] === val) {
+                        // Deselect
+                        this.checked = false;
+                        delete answers[q.id];
+                        card.classList.remove('answered');
+                        updateProgress();
+                    }
+                });
+                inp.addEventListener('change', () => handleAnswer(q.id, val, card));
+
+                const btn = document.createElement('span');
+                btn.className = 'likert-btn';
+
+                const num = document.createElement('span');
+                num.className = 'likert-num';
+                num.textContent = val;
+
+                const lbl = document.createElement('span');
+                lbl.className = 'likert-label';
+                lbl.textContent = LABELS[val - 1];
+
+                btn.appendChild(num);
+                btn.appendChild(lbl);
+                opt.appendChild(inp);
+                opt.appendChild(btn);
+                likertEl.appendChild(opt);
+            });
+
+            const legend = document.createElement('div');
+            legend.className = 'scale-legend';
+            legend.innerHTML = '<span>Not at all characteristic</span><span>Very characteristic</span>';
+
+            card.appendChild(qNumEl);
+            card.appendChild(qTextEl);
+            card.appendChild(likertEl);
+            card.appendChild(legend);
+            container.appendChild(card);
+        });
+
+        // ─────────────────────────────────────────────────────────────
+        // ANSWER HANDLER + PROGRESS
+        // ─────────────────────────────────────────────────────────────
+        function handleAnswer(qId, val, card) {
+            answers[qId] = val;
+            card.classList.add('answered');
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const count = Object.keys(answers).length;
+            const pct = (count / QUESTIONS.length) * 100;
+            document.getElementById('progressFill').style.width = pct + '%';
+            document.getElementById('progressCount').textContent = `${count} / ${QUESTIONS.length}`;
+        }
+
+        // ─────────────────────────────────────────────────────────────
+        // SCORING
+        // ─────────────────────────────────────────────────────────────
+        function scoreSubscale(sub) {
+            const items = QUESTIONS.filter(q => q.sub === sub);
+            const total = items.reduce((sum, q) => {
+                let v = answers[q.id];
+                if (q.reversed) v = 6 - v;   // reverse: 1↔5
+                return sum + v;
+            }, 0);
+            return total / items.length;   // average (1–5)
+        }
+
+        function classifyStyle(close, depend, anxiety) {
+            // Avoidant: low on Close AND low on Depend
+            if (close < 3.0 && depend < 3.0) return 'avoidant';
+            // Anxious:  high on Anxiety AND low on Close or Depend
+            if (anxiety >= 3.2 && (close < 3.5 || depend < 3.5)) return 'anxious';
+            // Secure
+            return 'secure';
+        }
+
+        // ─────────────────────────────────────────────────────────────
+        // RESULTS CONTENT
+        // ─────────────────────────────────────────────────────────────
+        const STYLES = {
+            secure: {
+                emoji: "🌿",
+                name: "Securely Attached",
+                className: "secure",
+                desc: "You feel comfortable with closeness and with depending on others. Your relationships are built on mutual trust, effective communication, and stability. Security is not static, so keep nurturing it with these principles.",
+                cardClass: "secure-card",
+                actionTitle: "✨ Secure Functioning Principles",
+                actionSubtitle: "You model what healthy love looks like. Keep these anchors strong:",
+                actions: [
+                    { icon: "🗣️", title: "Communicate effectively, always", body: "Keep your communication clear, direct, non-accusatory, and specific. Secure love never requires hinting, game-playing, or score-keeping. When something bothers you, say it simply and calmly." },
+                    { icon: "🔧", title: "Repair quickly after conflict", body: "Don't let resentment accumulate. After a disagreement, come back to your partner sooner rather than later. A small repair gesture early means you never need a big one later." },
+                    { icon: "🤲", title: "Make your partner's well-being matter", body: "Secure love is mutual regulation. When your partner expresses distress, respond early and warmly. Research shows early response prevents escalation completely." },
+                    { icon: "🎯", title: "Choose stability over drama", body: "Resist the pull of intensity and jealousy tactics. Secure relationships feel calm, not flat. Consistency and warmth are the real signs of love, not emotional roller coasters." },
+                    { icon: "📖", title: "Learn to recognize other styles", body: "Understanding anxious and avoidant patterns makes you a better partner. You can offer reassurance to anxious partners and give space without withdrawal to avoidant ones." },
+                ],
+            },
+            anxious: {
+                emoji: "🌊",
+                name: "Anxiously Attached",
+                className: "anxious",
+                desc: "You deeply value closeness, but fear of rejection or abandonment can trigger obsessive thinking, protest behaviors, and a constant need for reassurance. Your sensitivity is a strength. What needs to change is the strategy, not you.",
+                cardClass: "anxious-card",
+                actionTitle: "💪 Your Action Plan",
+                actionSubtitle: "8 steps to move from anxious toward secure:",
+                actions: [
+                    { icon: "💡", title: "Stop confusing anxiety with love", body: "An activated attachment system, feeling obsessive, insecure, or euphoric only when reassured, is NOT passion. It is a stress response. Ask yourself: Do I feel calm and safe with this person? If not, pause before going deeper." },
+                    { icon: "🚩", title: "Spot avoidants early and don't rationalize", body: "Watch for: mixed messages, emotional distance, 'you're too needy' comments, chronic ambiguity about the future, and ignoring emotional discussions. If intimacy feels repeatedly one-sided, step back. Don't wait for them to warm up." },
+                    { icon: "🗣️", title: "Express needs directly, not through protest", body: "Replace protest behaviors (over-texting, withdrawing, jealousy tactics) with direct requests. Try: 'When I don't hear from you, I feel anxious. I'd feel more secure if we checked in once a day.' Watch how they respond, it tells you everything." },
+                    { icon: "🤝", title: "Choose secure partners intentionally", body: "Prioritize consistency over intensity, warmth over mystery, stability over chemistry spikes. Secure partners calm your nervous system, respond to distress early, and don't create emotional roller coasters." },
+                    { icon: "🙋", title: "Don't suppress your needs to seem cool", body: "Ignore advice like 'play hard to get' or 'act mysterious'. It attracts avoidants. Be authentic early. If someone loses interest because you want closeness, that is useful information. They were wrong for you." },
+                    { icon: "⏸️", title: "Gather information before reacting", body: "Anxious people detect emotional shifts early but jump to conclusions too fast. Before reacting: pause, gather more information, ask instead of assume. A question is almost always better than a conclusion." },
+                    { icon: "🛑", title: "Recognize and interrupt protest behavior", body: "Protest behaviors (excess texting, withdrawing silently, threatening to leave, keeping score) push partners away. When you feel the urge to protest: pause, ask directly for reassurance, or self-soothe before engaging." },
+                    { icon: "🧑‍⚕️", title: "Meet a therapist", body: "Working with an attachment-aware therapist, such as one trained in Emotionally Focused Therapy (EFT), can help you understand your triggers, build self-soothing skills, and practice secure relating in a safe space. Consider booking even one consultation to get started." },
+                ],
+            },
+            avoidant: {
+                emoji: "🏔️",
+                name: "Avoidantly Attached",
+                className: "avoidant",
+                desc: "Avoidant attachment isn't about not needing love. It's about fearing dependence. You deactivate when intimacy increases, often without realizing it. The distance you create protects you from vulnerability, but also keeps connection out. This is fully changeable.",
+                cardClass: "avoidant-card",
+                actionTitle: "🛠️ Your Action Plan",
+                actionSubtitle: "7 concrete steps to open up and build real closeness:",
+                actions: [
+                    { icon: "🔍", title: "Recognize your deactivating strategies", body: "Common ones: focusing on your partner's flaws right after closeness, romanticizing exes, saying 'I'm not sure this is right', pulling away after vulnerability, needing excessive independence. Ask: Is this real incompatibility, or just discomfort with closeness?" },
+                    { icon: "🪞", title: "Stop idealizing the perfect one", body: "Avoidants often say they just haven't met the right person. This belief frequently protects against real vulnerability. Challenge your perfection standards. Notice when you use them to exit relationships that are actually good." },
+                    { icon: "🔥", title: "Practice leaning into discomfort", body: "Closeness may feel suffocating, but that feeling is not danger. It is just a response. Stay in conversations about feelings. Don't shut down when your partner expresses a need. Resist withdrawing immediately after emotional intensity." },
+                    { icon: "⚡", title: "Respond early to your partner's needs", body: "Research shows the earlier you respond to distress, the less escalation happens. If your partner asks for reassurance, a small gesture early prevents a much bigger conflict later. Don't wait until they explode." },
+                    { icon: "🔄", title: "Reframe dependency, it creates strength", body: "The Dependency Paradox: the more securely dependent people are on each other, the more independent they become. Your partner needing closeness is not control, it is bonding. Secure support actually increases your own confidence and autonomy." },
+                    { icon: "💬", title: "Communicate instead of shutting down", body: "Instead of changing the topic or minimizing, try: 'I feel overwhelmed right now, but I don't want to disconnect. Can we take a short break and come back to this?' That one sentence is secure behavior." },
+                    { icon: "🧑‍⚕️", title: "Meet a therapist", body: "Avoidant patterns are deeply rooted and often require professional support to shift. An Emotionally Focused Therapist (EFT) or schema therapist can help you safely explore why closeness feels threatening and guide you toward genuine intimacy. Even a few sessions can create a meaningful shift." },
+                ],
+            },
+        };
+
+        // ─────────────────────────────────────────────────────────────
+        // FORM SUBMIT
+        // ─────────────────────────────────────────────────────────────
+        document.getElementById('attachmentForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            // Validation
+            if (Object.keys(answers).length < QUESTIONS.length) {
+                showToast();
+                // Scroll to first unanswered
+                const first = QUESTIONS.find(q => !answers[q.id]);
+                if (first) document.getElementById(`card-${first.id}`).scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            }
+
+            const closeScore = scoreSubscale('C');
+            const dependScore = scoreSubscale('D');
+            const anxietyScore = scoreSubscale('A');
+            const style = classifyStyle(closeScore, dependScore, anxietyScore);
+            const data = STYLES[style];
+
+            renderResults(data, closeScore, dependScore, anxietyScore);
+        });
+
+        // ─────────────────────────────────────────────────────────────
+        // RENDER RESULTS
+        // ─────────────────────────────────────────────────────────────
+        function renderResults(data, closeScore, dependScore, anxietyScore) {
+            document.getElementById('formSection').style.display = 'none';
+            const res = document.getElementById('results');
+            res.style.display = 'block';
+
+            const pct = v => Math.round(((v - 1) / 4) * 100);
+
+            res.innerHTML = `
+      <div class="result-header ${data.className}">
+        <span class="result-emoji">${data.emoji}</span>
+        <h2>Your Attachment Style</h2>
+        <div class="style-name">${data.name}</div>
+        <p class="result-desc">${data.desc}</p>
+      </div>
+
+      <!-- Score bars -->
+      <div class="scores-card">
+        <h3>📊 Your Subscale Scores</h3>
+
+        <div class="score-row">
+          <div class="score-meta">
+            <span class="score-name" style="color:var(--green)">Comfort with Closeness</span>
+            <span class="score-val">${closeScore.toFixed(1)} / 5</span>
+          </div>
+          <div class="score-bg">
+            <div class="score-fill" id="fill-close" style="width:0%;background:var(--green)"></div>
+          </div>
+        </div>
+
+        <div class="score-row">
+          <div class="score-meta">
+            <span class="score-name" style="color:var(--teal)">Comfort with Dependence</span>
+            <span class="score-val">${dependScore.toFixed(1)} / 5</span>
+          </div>
+          <div class="score-bg">
+            <div class="score-fill" id="fill-depend" style="width:0%;background:var(--teal)"></div>
+          </div>
+        </div>
+
+        <div class="score-row">
+          <div class="score-meta">
+            <span class="score-name" style="color:var(--rose)">Relationship Anxiety</span>
+            <span class="score-val">${anxietyScore.toFixed(1)} / 5</span>
+          </div>
+          <div class="score-bg">
+            <div class="score-fill" id="fill-anxiety" style="width:0%;background:var(--rose)"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action card -->
+      <div class="action-card ${data.cardClass}">
+        <h3>${data.actionTitle}</h3>
+        <p class="subtitle">${data.actionSubtitle}</p>
+        ${data.actions.map(a => `
+          <div class="action-item">
+            <div class="action-icon">${a.icon}</div>
+            <div class="action-text">
+              <div class="action-title">${a.title}</div>
+              <div class="action-body">${a.body}</div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+
+      <div class="submit-wrap">
+        <button class="btn-retake" onclick="location.reload()">↩ Retake the Quiz</button>
+      </div>
+    `;
+
+            // Animate score bars after a tick (so transition fires)
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    document.getElementById('fill-close').style.width = pct(closeScore) + '%';
+                    document.getElementById('fill-depend').style.width = pct(dependScore) + '%';
+                    document.getElementById('fill-anxiety').style.width = pct(anxietyScore) + '%';
+                });
+            });
+
+            res.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // ─────────────────────────────────────────────────────────────
+        // TOAST
+        // ─────────────────────────────────────────────────────────────
+        function showToast() {
+            const t = document.getElementById('toast');
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3500);
+        }
+    </script>
+</body>
+
+</html>
