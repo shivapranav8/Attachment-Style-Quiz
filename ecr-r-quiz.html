@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Adult Attachment Style Quiz</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #0d0f1a;
+            --card: #161929;
+            --card2: #1e2340;
+            --border: rgba(255, 255, 255, 0.07);
+            --accent: #7c6fef;
+            --accent2: #a78bfa;
+            --teal: #38bdf8;
+            --rose: #f472b6;
+            --amber: #fbbf24;
+            --green: #34d399;
+            --text: #e2e8f5;
+            --muted: #8892a4;
+            --radius: 18px;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ─── Background orbs ────────────────────────────── */
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.18;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .orb-1 {
+            width: 600px;
+            height: 600px;
+            background: var(--accent);
+            top: -200px;
+            left: -200px;
+        }
+
+        .orb-2 {
+            width: 500px;
+            height: 500px;
+            background: var(--teal);
+            bottom: -150px;
+            right: -150px;
+        }
+
+        .orb-3 {
+            width: 350px;
+            height: 350px;
+            background: var(--rose);
+            top: 40%;
+            left: 55%;
+        }
+
+        /* ─── Layout ──────────────────────────────────── */
+        .page {
+            position: relative;
+            z-index: 1;
+            padding: 24px 16px 80px;
+            max-width: 760px;
+            margin: 0 auto;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 64px 24px 48px;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(124, 111, 239, 0.15);
+            border: 1px solid rgba(124, 111, 239, 0.35);
+            color: var(--accent2);
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 6px 14px;
+            border-radius: 999px;
+            margin-bottom: 24px;
+        }
+
+        /* FIX MINOR-3: color fallback before gradient text — prevents invisible h1 in high-contrast/print */
+        .hero h1 {
+            font-size: clamp(28px, 6vw, 52px);
+            font-weight: 800;
+            line-height: 1.15;
+            color: var(--text);
+            background: linear-gradient(135deg, #e2e8f5 30%, var(--accent2) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 16px;
+        }
+
+        .hero p {
+            color: var(--muted);
+            font-size: 16px;
+            line-height: 1.7;
+            max-width: 520px;
+            margin: 0 auto;
+        }
+
+        /* ─── Progress ────────────────────────────────── */
+        .progress-wrap {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px 28px;
+            margin-bottom: 32px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .progress-label {
+            font-size: 13px;
+            color: var(--muted);
+            white-space: nowrap;
+        }
+
+        .progress-bar-bg {
+            flex: 1;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.07);
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--accent), var(--teal));
+            transition: width 0.4s cubic-bezier(.4, 0, .2, 1);
+        }
+
+        .progress-count {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--accent2);
+            white-space: nowrap;
+        }
+
+        /* ─── Question Card ───────────────────────────── */
+        .question-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 32px 28px;
+            margin-bottom: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .question-card.answered {
+            border-color: rgba(124, 111, 239, 0.35);
+        }
+
+        .q-number {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--accent2);
+            margin-bottom: 10px;
+        }
+
+        /* FIX CRITICAL-4: fieldset strips default border/padding; legend is the question text */
+        .likert-fieldset {
+            border: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .likert-fieldset legend {
+            font-size: 16px;
+            font-weight: 500;
+            line-height: 1.6;
+            color: var(--text);
+            margin-bottom: 24px;
+            float: left;
+            width: 100%;
+        }
+
+        /* Clear float so the grid renders below the legend */
+        .likert-fieldset legend + .likert {
+            clear: left;
+        }
+
+        /* ─── Likert 1-7 ──────────────────────────────── */
+        .likert {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 6px;
+        }
+
+        .likert-option {
+            position: relative;
+        }
+
+        /* FIX CRITICAL-2: accessible visually-hidden — preserves keyboard operability */
+        .likert-option input {
+            position: absolute;
+            opacity: 0;
+            width: 1px;
+            height: 1px;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .likert-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            padding: 12px 2px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            background: var(--card2);
+            transition: all 0.2s ease;
+            text-align: center;
+            min-height: 44px; /* FIX MAJOR-2: minimum touch target height */
+        }
+
+        .likert-btn:hover {
+            border-color: var(--accent);
+            background: rgba(124, 111, 239, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* FIX CRITICAL-2: visible focus ring for keyboard navigation */
+        .likert-option input:focus-visible + .likert-btn {
+            outline: 2px solid var(--accent2);
+            outline-offset: 3px;
+        }
+
+        .likert-option input:checked + .likert-btn {
+            border-color: var(--accent);
+            background: rgba(124, 111, 239, 0.2);
+            box-shadow: 0 0 0 3px rgba(124, 111, 239, 0.15), 0 4px 16px rgba(124, 111, 239, 0.25);
+        }
+
+        .likert-num {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--muted);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .likert-option input:checked + .likert-btn .likert-num {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .likert-label {
+            display: none;
+        }
+
+        .likert-option input:checked + .likert-btn .likert-label {
+            color: var(--accent2);
+        }
+
+        .scale-legend {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        /* ─── Page Indicator ──────────────────────────── */
+        .page-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .page-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.12);
+            transition: all 0.3s;
+        }
+
+        .page-dot.active {
+            background: var(--accent);
+            box-shadow: 0 0 8px var(--accent);
+            transform: scale(1.2);
+        }
+
+        .page-dot.done {
+            background: var(--teal);
+        }
+
+        .page-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--muted);
+            margin-left: 4px;
+            text-transform: uppercase;
+        }
+
+        /* ─── Navigation ─────────────────────────────── */
+        .quiz-page {
+            display: none;
+            animation: slideIn 0.35s ease both;
+        }
+
+        .quiz-page.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInBack {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .quiz-page.slide-back {
+            animation: slideInBack 0.35s ease both;
+        }
+
+        .nav-wrap {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 32px;
+        }
+
+        .btn-back {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--muted);
+            padding: 12px 24px;
+            border-radius: 999px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .btn-back:hover {
+            border-color: var(--accent);
+            color: var(--accent2);
+        }
+
+        .btn-next,
+        .btn-submit {
+            background: linear-gradient(135deg, var(--accent), var(--teal));
+            color: #fff;
+            padding: 13px 36px;
+            border-radius: 999px;
+            border: none;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 15px;
+            box-shadow: 0 6px 24px rgba(124, 111, 239, 0.3);
+        }
+
+        .btn-next:hover,
+        .btn-submit:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        /* ─── Results ────────────────────────────────── */
+        #results {
+            display: none;
+            padding-top: 20px;
+            animation: fadeUp 0.6s ease both;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .result-emoji {
+            font-size: 64px;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .style-name {
+            display: inline-block;
+            font-size: 28px;
+            font-weight: 700;
+            padding: 6px 24px;
+            border-radius: 999px;
+            margin-bottom: 16px;
+        }
+
+        .result-desc {
+            color: var(--muted);
+            font-size: 16px;
+            line-height: 1.7;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .secure .style-name {
+            background: rgba(52, 211, 153, 0.15);
+            color: var(--green);
+            border: 1px solid rgba(52, 211, 153, 0.3);
+        }
+
+        .preoccupied .style-name {
+            background: rgba(244, 114, 182, 0.15);
+            color: var(--rose);
+            border: 1px solid rgba(244, 114, 182, 0.3);
+        }
+
+        .dismissing .style-name {
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--teal);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+
+        .fearful .style-name {
+            background: rgba(251, 191, 36, 0.15);
+            color: var(--amber);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .score-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+        }
+
+        .score-card h4 {
+            font-size: 13px;
+            color: var(--muted);
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .score-val {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+
+        .score-val span {
+            font-size: 16px;
+            font-weight: 400;
+            opacity: 0.5;
+        }
+
+        .score-meaning {
+            font-size: 13px;
+            opacity: 0.7;
+        }
+
+        .action-card {
+            background: var(--card2);
+            border-radius: var(--radius);
+            padding: 32px;
+            margin-bottom: 24px;
+        }
+
+        .action-card h3 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .action-item {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            border-radius: 14px;
+            margin-bottom: 16px;
+            display: flex;
+            gap: 16px;
+        }
+
+        .action-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .action-icon {
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .action-title {
+            font-weight: 700;
+            margin-bottom: 4px;
+            font-size: 15px;
+        }
+
+        .action-body {
+            font-size: 14px;
+            opacity: 0.8;
+            line-height: 1.6;
+        }
+
+        /* FIX MINOR-10 / disclaimer */
+        .disclaimer-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            border-radius: 14px;
+            padding: 18px 22px;
+            margin-bottom: 24px;
+            font-size: 13px;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .disclaimer-card.boundary {
+            background: rgba(251, 191, 36, 0.05);
+            border-color: rgba(251, 191, 36, 0.2);
+        }
+
+        .disclaimer-card strong {
+            color: var(--amber);
+        }
+
+        .footer-credit {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .footer-credit a {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 14px;
+            padding: 10px 20px;
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            background: var(--card);
+            transition: 0.2s;
+        }
+
+        .footer-credit a:hover {
+            border-color: var(--accent);
+            color: #fff;
+        }
+
+        /* FIX CRITICAL-5: toast text set dynamically; role=alert in HTML */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #2a1a3e;
+            border: 1px solid var(--rose);
+            color: var(--rose);
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-weight: 600;
+            opacity: 0;
+            transition: 0.4s;
+            z-index: 1000;
+            max-width: calc(100vw - 48px);
+            text-align: center;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        /* ─── Mobile ─────────────────────────────────── */
+        @media (max-width: 600px) {
+            .page {
+                padding: 16px 8px 80px;
+            }
+
+            .question-card {
+                padding: 24px 12px;
+            }
+
+            /* FIX MAJOR-1: keep 7 columns on mobile so scale reads left-to-right */
+            .likert {
+                grid-template-columns: repeat(7, 1fr);
+                gap: 3px;
+            }
+
+            .likert-btn {
+                padding: 10px 1px;
+            }
+
+            .likert-num {
+                width: 24px;
+                height: 24px;
+                font-size: 11px;
+            }
+
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ─── Reduced motion ─────────────────────────── */
+        /* FIX MINOR-8: respect prefers-reduced-motion for vestibular disorders */
+        @media (prefers-reduced-motion: reduce) {
+            .quiz-page {
+                animation: none;
+            }
+
+            #results {
+                animation: none;
+            }
+
+            .likert-btn {
+                transition: none;
+            }
+
+            .progress-bar-fill {
+                transition: none;
+            }
+
+            .page-dot {
+                transition: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="orb orb-1" aria-hidden="true"></div>
+    <div class="orb orb-2" aria-hidden="true"></div>
+    <div class="orb orb-3" aria-hidden="true"></div>
+
+    <!-- FIX CRITICAL-5: role=alert + aria-live ensures screen readers announce errors; text set dynamically -->
+    <div class="toast" id="toast" role="alert" aria-live="assertive"></div>
+
+    <div class="page">
+        <div id="formSection">
+            <!-- FIX MINOR-4: added estimated time to intro -->
+            <div class="hero" id="hero">
+                <div class="hero-badge"><span aria-hidden="true">🧠</span><span>Advanced Assessment</span></div>
+                <h1>Adult Attachment<br />Style Quiz</h1>
+                <p>The gold standard in attachment research. This 36-item assessment measures your anxiety and avoidance
+                    dimensions with high precision. Most people complete it in 4–6 minutes.</p>
+            </div>
+
+            <div class="progress-wrap">
+                <span class="progress-label" id="progressLabel">Progress</span>
+                <!-- role=progressbar with aria values for screen readers -->
+                <div class="progress-bar-bg"
+                     role="progressbar"
+                     aria-valuenow="0"
+                     aria-valuemin="0"
+                     aria-valuemax="36"
+                     aria-labelledby="progressLabel"
+                     id="progressBar">
+                    <div class="progress-bar-fill" id="progressFill"></div>
+                </div>
+                <span class="progress-count" id="progressCount" aria-live="polite">0 / 36</span>
+            </div>
+
+            <!-- FIX MINOR-1: page dots with aria-label; pageLabel with aria-live -->
+            <div class="page-indicator" role="group" aria-label="Quiz pages">
+                <div class="page-dot active" aria-label="Page 1 of 6 — current"></div>
+                <div class="page-dot" aria-label="Page 2 of 6"></div>
+                <div class="page-dot" aria-label="Page 3 of 6"></div>
+                <div class="page-dot" aria-label="Page 4 of 6"></div>
+                <div class="page-dot" aria-label="Page 5 of 6"></div>
+                <div class="page-dot" aria-label="Page 6 of 6"></div>
+                <span class="page-label" id="pageLabel" aria-live="polite">Part 1 of 6</span>
+            </div>
+
+            <form id="quizForm">
+                <div id="pagesWrapper">
+                    <!-- Pages rendered by JS -->
+                </div>
+
+                <div class="nav-wrap">
+                    <!-- FIX MAJOR-6: display:none removes from tab order when hidden -->
+                    <button type="button" class="btn-back" id="btnBack" onclick="changePage(-1)"
+                        style="display:none">← Back</button>
+                    <button type="button" class="btn-next" id="btnNext" onclick="changePage(1)">Next →</button>
+                    <button type="submit" class="btn-submit" id="submitBtn" style="display:none">View My Results
+                        ✨</button>
+                </div>
+            </form>
+        </div>
+
+        <div id="results">
+            <!-- Results rendered by JS -->
+        </div>
+
+        <!-- FIX MINOR-5: footer hidden during quiz, shown only on results -->
+        <div class="footer-credit" id="footerCredit" style="display:none">
+            <a href="https://shivapranav.com" target="_blank" rel="noopener noreferrer">
+                <span aria-hidden="true">⚡</span> Made by Shiva Pranav
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // FIX CRITICAL-1: Q36 was a duplicate of Q35 ("It is easy for me to be affectionate…").
+        // Replaced with the correct ECR-R avoidance item.
+        const QUESTIONS = [
+            // Anxiety (1-18)
+            { id: 1,  text: "I'm afraid that I will lose my partner's love.", type: "anxiety", reversed: false },
+            { id: 2,  text: "I often worry that my partner will not want to stay with me.", type: "anxiety", reversed: false },
+            { id: 3,  text: "I often worry that my partner doesn't really love me.", type: "anxiety", reversed: false },
+            { id: 4,  text: "I worry that romantic partners won't care about me as much as I care about them.", type: "anxiety", reversed: false },
+            { id: 5,  text: "I often wish that my partner's feelings for me were as strong as my feelings for him or her.", type: "anxiety", reversed: false },
+            { id: 6,  text: "I worry a lot about my relationships.", type: "anxiety", reversed: false },
+            { id: 7,  text: "When my partner is out of sight, I worry that he or she might become interested in someone else.", type: "anxiety", reversed: false },
+            { id: 8,  text: "When I show my feelings for romantic partners, I'm afraid they will not feel the same about me.", type: "anxiety", reversed: false },
+            { id: 9,  text: "I rarely worry about my partner leaving me.", type: "anxiety", reversed: true },
+            { id: 10, text: "My romantic partner makes me doubt myself.", type: "anxiety", reversed: false },
+            { id: 11, text: "I do not often worry about being abandoned.", type: "anxiety", reversed: true },
+            { id: 12, text: "I find that my partner(s) don't want to get as close as I would like.", type: "anxiety", reversed: false },
+            { id: 13, text: "Sometimes romantic partners change their feelings about me for no apparent reason.", type: "anxiety", reversed: false },
+            { id: 14, text: "My desire to be very close sometimes scares people away.", type: "anxiety", reversed: false },
+            { id: 15, text: "I'm afraid that once a romantic partner gets to know me, he or she won't like who I really am.", type: "anxiety", reversed: false },
+            { id: 16, text: "It makes me mad that I don't get the affection and support I need from my partner.", type: "anxiety", reversed: false },
+            { id: 17, text: "I worry that I won't measure up to other people.", type: "anxiety", reversed: false },
+            { id: 18, text: "My partner only seems to notice me when I'm angry.", type: "anxiety", reversed: false },
+            // Avoidance (19-36)
+            { id: 19, text: "I prefer not to show a partner how I feel deep down.", type: "avoidance", reversed: false },
+            { id: 20, text: "I feel comfortable sharing my private thoughts and feelings with my partner.", type: "avoidance", reversed: true },
+            { id: 21, text: "I find it difficult to allow myself to depend on romantic partners.", type: "avoidance", reversed: false },
+            { id: 22, text: "I am very comfortable being close to romantic partners.", type: "avoidance", reversed: true },
+            { id: 23, text: "I don't feel comfortable opening up to romantic partners.", type: "avoidance", reversed: false },
+            { id: 24, text: "I prefer not to be too close to romantic partners.", type: "avoidance", reversed: false },
+            { id: 25, text: "I get uncomfortable when a romantic partner wants to be very close.", type: "avoidance", reversed: false },
+            { id: 26, text: "I find it relatively easy to get close to my partner.", type: "avoidance", reversed: true },
+            { id: 27, text: "It's not difficult for me to get close to my partner.", type: "avoidance", reversed: true },
+            { id: 28, text: "I usually discuss my problems and concerns with my partner.", type: "avoidance", reversed: true },
+            { id: 29, text: "It helps to turn to my romantic partner in times of need.", type: "avoidance", reversed: true },
+            { id: 30, text: "I tell my partner just about everything.", type: "avoidance", reversed: true },
+            { id: 31, text: "I talk things over with my partner.", type: "avoidance", reversed: true },
+            { id: 32, text: "I am nervous when partners get too close to me.", type: "avoidance", reversed: false },
+            { id: 33, text: "I feel comfortable depending on romantic partners.", type: "avoidance", reversed: true },
+            { id: 34, text: "I find it easy to depend on romantic partners.", type: "avoidance", reversed: true },
+            { id: 35, text: "It's easy for me to be affectionate with my partner.", type: "avoidance", reversed: true },
+            // FIX CRITICAL-1: was duplicate of Q35; replaced with correct avoidance item
+            { id: 36, text: "I turn to my partner for many things, including comfort and reassurance.", type: "avoidance", reversed: true }
+        ];
+
+        // FIX MAJOR-3: non-standard "Small disagree/agree" replaced with ECR-R standard anchors
+        const LABELS = [
+            "Strongly disagree",
+            "Disagree",
+            "Disagree slightly",
+            "Neutral",
+            "Agree slightly",
+            "Agree",
+            "Strongly agree"
+        ];
+
+        const answers = {};
+        const PAGE_SIZE = 6;
+        let currentPage = 0;
+        let heroHidden = false;
+
+        // ─── localStorage persistence (FIX MAJOR-5) ──────────────────────
+        const STORAGE_KEY = 'ecr_r_quiz_answers_v1';
+
+        function saveAnswers() {
+            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(answers)); } catch (e) { /* quota exceeded — ignore */ }
+        }
+
+        function loadSavedAnswers() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (raw) {
+                    const saved = JSON.parse(raw);
+                    Object.assign(answers, saved);
+                    return Object.keys(answers).length > 0;
+                }
+            } catch (e) { /* corrupt data — ignore */ }
+            return false;
+        }
+
+        function clearSavedAnswers() {
+            try { localStorage.removeItem(STORAGE_KEY); } catch (e) { /* ignore */ }
+        }
+
+        // ─── Render pages ─────────────────────────────────────────────────
+        function renderPages() {
+            const wrapper = document.getElementById('pagesWrapper');
+            for (let p = 0; p < (QUESTIONS.length / PAGE_SIZE); p++) {
+                const pageEl = document.createElement('div');
+                pageEl.className = `quiz-page ${p === 0 ? 'active' : ''}`;
+                pageEl.id = `page-${p}`;
+
+                const slice = QUESTIONS.slice(p * PAGE_SIZE, (p + 1) * PAGE_SIZE);
+                slice.forEach(q => {
+                    const card = document.createElement('div');
+                    card.className = 'question-card';
+                    card.id = `card-${q.id}`;
+
+                    // FIX CRITICAL-4: fieldset+legend pairs radio group with question text semantically
+                    // FIX CRITICAL-3: onchange (not onclick) fires for both pointer and keyboard
+                    // FIX CRITICAL-2: aria-label on each input; .likert-btn is aria-hidden (decorative)
+                    card.innerHTML = `
+                        <div class="q-number">Question ${q.id} of 36</div>
+                        <fieldset class="likert-fieldset">
+                            <legend>${q.text}</legend>
+                            <div class="likert">
+                                ${[1, 2, 3, 4, 5, 6, 7].map(v => `
+                                    <label class="likert-option">
+                                        <input type="radio"
+                                               name="q${q.id}"
+                                               value="${v}"
+                                               aria-label="${LABELS[v - 1]}"
+                                               onchange="handleAnswer(${q.id}, ${v})">
+                                        <span class="likert-btn" aria-hidden="true">
+                                            <span class="likert-num">${v}</span>
+                                            <span class="likert-label">${LABELS[v - 1]}</span>
+                                        </span>
+                                    </label>
+                                `).join('')}
+                            </div>
+                            <div class="scale-legend" aria-hidden="true">
+                                <span>Strongly Disagree</span>
+                                <span>Strongly Agree</span>
+                            </div>
+                        </fieldset>
+                    `;
+                    pageEl.appendChild(card);
+                });
+                wrapper.appendChild(pageEl);
+            }
+        }
+
+        // Restore UI state when answers are loaded from localStorage
+        function restoreUI() {
+            for (const [qid, val] of Object.entries(answers)) {
+                const radio = document.querySelector(`input[name="q${qid}"][value="${val}"]`);
+                if (radio) radio.checked = true;
+                const card = document.getElementById(`card-${qid}`);
+                if (card) card.classList.add('answered');
+            }
+            updateProgress();
+        }
+
+        function handleAnswer(qid, val) {
+            answers[qid] = val;
+            document.getElementById(`card-${qid}`).classList.add('answered');
+            saveAnswers();
+            updateProgress();
+
+            // FIX MAJOR-7: hide hero after first interaction so quiz gets full viewport
+            if (!heroHidden) {
+                heroHidden = true;
+                const hero = document.getElementById('hero');
+                hero.style.transition = 'opacity 0.3s';
+                hero.style.opacity = '0';
+                setTimeout(() => { hero.style.display = 'none'; }, 300);
+            }
+        }
+
+        function updateProgress() {
+            const count = Object.keys(answers).length;
+            const pct = (count / QUESTIONS.length) * 100;
+            document.getElementById('progressFill').style.width = pct + '%';
+            document.getElementById('progressCount').textContent = `${count} / 36`;
+            const bar = document.getElementById('progressBar');
+            bar.setAttribute('aria-valuenow', count);
+        }
+
+        function changePage(dir) {
+            if (dir === 1) {
+                const start = currentPage * PAGE_SIZE;
+                const pageQs = QUESTIONS.slice(start, start + PAGE_SIZE);
+                const remaining = pageQs.filter(q => !answers[q.id]).length;
+                if (remaining > 0) {
+                    showToast(`Please answer ${remaining === 1 ? 'the remaining question' : `all ${remaining} remaining questions`} on this page.`);
+                    return;
+                }
+            }
+
+            const oldPage = document.getElementById(`page-${currentPage}`);
+            oldPage.classList.remove('active', 'slide-back');
+            currentPage += dir;
+            const newPage = document.getElementById(`page-${currentPage}`);
+            if (dir === -1) newPage.classList.add('slide-back');
+            newPage.classList.add('active');
+
+            // Update page dots (FIX MINOR-1: aria-label updated)
+            const dots = document.querySelectorAll('.page-dot');
+            dots.forEach((dot, i) => {
+                dot.classList.remove('active', 'done');
+                dot.setAttribute('aria-label', `Page ${i + 1} of 6${i < currentPage ? ' — complete' : i === currentPage ? ' — current' : ''}`);
+                if (i < currentPage) dot.classList.add('done');
+                if (i === currentPage) dot.classList.add('active');
+            });
+            document.getElementById('pageLabel').textContent = `Part ${currentPage + 1} of 6`;
+
+            // FIX MAJOR-6: display:none removes btn from tab order when not applicable
+            document.getElementById('btnBack').style.display = currentPage === 0 ? 'none' : 'inline-block';
+            document.getElementById('btnNext').style.display = currentPage === 5 ? 'none' : 'inline-block';
+            document.getElementById('submitBtn').style.display = currentPage === 5 ? 'inline-block' : 'none';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // FIX CRITICAL-5: text set dynamically so aria-live region triggers announcement
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg || 'Please answer all questions on this page.';
+            t.classList.add('show');
+            setTimeout(() => {
+                t.classList.remove('show');
+                // Clear after transition so repeat messages still trigger aria-live
+                setTimeout(() => { t.textContent = ''; }, 500);
+            }, 3500);
+        }
+
+        document.getElementById('quizForm').onsubmit = (e) => {
+            e.preventDefault();
+            if (Object.keys(answers).length < QUESTIONS.length) {
+                showToast('Please answer all questions before submitting.');
+                return;
+            }
+
+            const anxietyScore  = calculateMean('anxiety');
+            const avoidanceScore = calculateMean('avoidance');
+            const style = classify(anxietyScore, avoidanceScore);
+            clearSavedAnswers();
+            renderResults(style, anxietyScore, avoidanceScore);
+        };
+
+        function calculateMean(type) {
+            const items = QUESTIONS.filter(q => q.type === type);
+            const sum = items.reduce((acc, q) => {
+                let val = answers[q.id];
+                if (q.reversed) val = 8 - val;
+                return acc + val;
+            }, 0);
+            return sum / items.length;
+        }
+
+        function classify(anxiety, avoidance) {
+            const threshold = 3.5;
+            if (anxiety < threshold && avoidance < threshold) return 'secure';
+            if (anxiety >= threshold && avoidance < threshold) return 'preoccupied';
+            if (anxiety < threshold && avoidance >= threshold) return 'dismissing';
+            return 'fearful';
+        }
+
+        // FIX MINOR-10: detect scores near the classification boundary
+        function isNearBoundary(anxiety, avoidance) {
+            return Math.abs(anxiety - 3.5) < 0.5 || Math.abs(avoidance - 3.5) < 0.5;
+        }
+
+        const STYLES = {
+            secure: {
+                name: "Securely Attached",
+                emoji: "🌿",
+                class: "secure",
+                desc: "You are comfortable with intimacy and usually don't worry about being rejected or alone. You can depend on others and have others depend on you without significant stress.",
+                actions: [
+                    { icon: "🗣️", title: "Communicate clearly and specifically", body: "Keep communication direct, non-accusatory, and specific. No hinting, game-playing, or score-keeping. Say what you mean, mean what you say, and trust that your partner can handle the truth delivered kindly." },
+                    { icon: "🔧", title: "Repair quickly after conflict", body: "Don't let resentment accumulate. A small repair gesture early, like \"I'm sorry I snapped, can we reset?\", prevents a much bigger rupture later. The quality of the repair matters more than avoiding conflict in the first place." },
+                    { icon: "🤲", title: "Respond early to your partner's distress", body: "When a partner signals need, respond warmly and promptly. Early response prevents escalation completely. You don't need to solve their problem. Showing up with attention is often enough." },
+                    { icon: "🌱", title: "Use your security to steady others", body: "Your consistent, calm, and predictable behavior can gradually shift an anxious or avoidant partner's expectations of what relationships feel like. Steadiness is contagious. Use it deliberately." },
+                    { icon: "📖", title: "Learn to recognize other attachment styles", body: "Understanding anxious protest behaviors and avoidant deactivating strategies makes you a more effective and compassionate partner. What looks like drama or coldness is usually fear. Knowing this changes how you respond." }
+                ]
+            },
+            preoccupied: {
+                name: "Anxious-Preoccupied",
+                emoji: "🌊",
+                class: "preoccupied",
+                desc: "You crave deep intimacy but often worry that your partner doesn't value the relationship as much as you do. You may be hyper-sensitive to changes in your partner's mood.",
+                actions: [
+                    { icon: "💡", title: "Stop confusing anxiety with love", body: "An activated attachment system is a stress response, not a sign of deep passion. When you feel that electric pull toward someone who is inconsistent or unavailable, ask yourself: do I feel calm and safe with this person? If not, that feeling is anxiety, not love." },
+                    { icon: "🗣️", title: "Express needs directly instead of through protest", body: "Protest behaviors like over-texting, withdrawing, or making a partner jealous signal need indirectly and usually backfire. Replace them with direct requests: \"I'd feel more secure if we checked in once a day.\" Legible bids work. Protest behaviors don't." },
+                    { icon: "⏸️", title: "Pause and ask before assuming", body: "Your threat-detection system is calibrated too sensitively, and a two-hour silence almost never means what your brain says it means. Gather information before drawing conclusions. Ask before assuming. A question is almost always better than a conclusion." },
+                    { icon: "🛑", title: "Recognize and interrupt protest behavior", body: "When the urge to protest hits, whether that's sending the angry text, going cold, or escalating, pause. Then either ask directly for what you need, or self-soothe first. The goal is to make your need visible without making your partner feel attacked." },
+                    { icon: "🏃", title: "Build a life outside the relationship", body: "When your partner is your only source of felt security, every disconnection feels catastrophic. Maintain close friendships, personal goals, and interests outside the couple. A wider identity means less vulnerability to any single relationship's fluctuations." }
+                ]
+            },
+            dismissing: {
+                name: "Dismissive-Avoidant",
+                emoji: "🏔️",
+                class: "dismissing",
+                desc: "You prioritize independence and self-reliance, often at the cost of emotional depth. You may view closeness as a threat to your freedom and shut down when things get 'too heavy'.",
+                actions: [
+                    { icon: "🔍", title: "Recognize your deactivating strategies", body: "These are the automatic moves you make when intimacy increases: focusing on a partner's flaws, romanticizing past relationships, mentally exiting before anything goes wrong, telling yourself you don't need anyone. Naming these patterns as they happen is enough to interrupt the cycle." },
+                    { icon: "🔄", title: "Reframe dependency: it creates strength", body: "This is called the Dependency Paradox. Secure dependence on a trusted person actually increases your own autonomy and confidence. It doesn't reduce them. The self-sufficiency you protect is not as fragile as your nervous system believes." },
+                    { icon: "🔥", title: "Practice staying in emotional conversations", body: "Closeness may feel suffocating, but that sensation is a learned response, not a signal of real danger. The discomfort of staying in a feelings conversation is tolerable. Each time you stay, the discomfort decreases a little." },
+                    { icon: "⚡", title: "Respond early to your partner's bids", body: "A small reassurance gesture early prevents a much larger conflict later. You don't have to feel the warmth before you act on it. Act first, and the feeling often follows." },
+                    { icon: "✍️", title: "Write before you speak", body: "Spend 15 minutes writing freely about an emotionally significant experience, not what happened, but what you felt. Writing lets you approach suppressed material privately, without the face-to-face exposure that typically triggers defensive shutdown. Start with what you felt, not what you did." }
+                ]
+            },
+            fearful: {
+                name: "Fearful-Avoidant",
+                emoji: "🌪️",
+                class: "fearful",
+                desc: "You want closeness but are also afraid of it. You may oscillate between being very clingy and very distant, often feeling overwhelmed by the complexity of relationships.",
+                actions: [
+                    { icon: "🧠", title: "Work with an attachment-focused therapist", body: "Fearful-avoidant attachment usually originates from a situation where the caregiver was simultaneously the source of fear and the only available safe haven. This creates an unresolvable paradox that standard talk therapy can inadvertently reactivate. An attachment-focused or EMDR-trained therapist is specifically equipped to process these conflicting early memories." },
+                    { icon: "🌊", title: "Find your window of tolerance", body: "Your nervous system has a zone between panic and shutdown where relational work can actually happen. Learn to recognize when you leave this zone and use grounding practices like slow breathing, physical sensation, or orienting to your immediate environment to return before continuing any difficult interaction." },
+                    { icon: "🛡️", title: "Build distress tolerance before vulnerability", body: "Before diving into relational vulnerability, build the capacity to survive emotional spikes without collapsing or lashing out. Skills like paced breathing, self-soothing through the senses, and accepting the present moment create a foundation that makes intimacy survivable rather than threatening." },
+                    { icon: "⚓", title: "Seek out earned security", body: "You can develop earned security through sustained, consistent relationships with steadily secure people, whether therapists, close friends, or partners. Identify one person in your life whose reliability you can lean into deliberately. Security, experienced enough times, begins to rewire your nervous system's expectations." },
+                    { icon: "🧘", title: "Build a daily body-based practice", body: "Trauma is stored in the body, not just the mind, which means body-based practices are core tools, not optional extras. Even 10 minutes daily of yoga, breathwork, or mindful movement raises your baseline capacity for nervous system regulation and makes you less reactive in close relationships over time." }
+                ]
+            }
+        };
+
+        function renderResults(style, anxiety, avoidance) {
+            const data = STYLES[style];
+            document.getElementById('formSection').style.display = 'none';
+
+            const res = document.getElementById('results');
+            res.style.display = 'block';
+            res.className = data.class;
+
+            const nearBoundary = isNearBoundary(anxiety, avoidance);
+
+            // FIX MINOR-2: aria-hidden on all emoji spans — style name + description are sufficient
+            res.innerHTML = `
+                <div class="result-header">
+                    <span class="result-emoji" aria-hidden="true">${data.emoji}</span>
+                    <div class="style-name">${data.name}</div>
+                    <p class="result-desc">${data.desc}</p>
+                </div>
+
+                <div class="results-grid">
+                    <div class="score-card">
+                        <h4>Anxiety Dimension</h4>
+                        <div class="score-val">${anxiety.toFixed(2)}<span> / 7</span></div>
+                        <div class="score-meaning">${anxiety >= 3.5 ? 'High sensitivity to rejection' : 'Low relationship anxiety'}</div>
+                    </div>
+                    <div class="score-card">
+                        <h4>Avoidance Dimension</h4>
+                        <div class="score-val">${avoidance.toFixed(2)}<span> / 7</span></div>
+                        <div class="score-meaning">${avoidance >= 3.5 ? 'High preference for distance' : 'Comfortable with closeness'}</div>
+                    </div>
+                </div>
+
+                ${nearBoundary ? `
+                <div class="disclaimer-card boundary">
+                    <strong>Note:</strong> Your scores are close to the classification boundary (3.5 on a 7-point scale).
+                    Small differences in interpretation could shift the result. Consider reading about all four
+                    attachment styles to see which feels most accurate to your lived experience.
+                </div>
+                ` : ''}
+
+                <div class="action-card">
+                    <h3><span aria-hidden="true">💡</span> Actionable Steps</h3>
+                    ${data.actions.map(a => `
+                        <div class="action-item">
+                            <div class="action-icon" aria-hidden="true">${a.icon}</div>
+                            <div>
+                                <div class="action-title">${a.title}</div>
+                                <div class="action-body">${a.body}</div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <div class="disclaimer-card">
+                    <strong>Disclaimer:</strong> This tool is for personal reflection only and is not a clinical
+                    diagnosis. The ECR-R is a self-report measure; results can be influenced by your current mood,
+                    relationship status, and how you interpret each item. If you have concerns about your mental
+                    health or relationships, please speak with a qualified therapist or counselor.
+                </div>
+
+                <div style="text-align:center;margin-bottom:8px">
+                    <button class="btn-back" onclick="confirmRetake()">↩ Retake the ECR-R</button>
+                </div>
+            `;
+
+            // FIX MINOR-5: show footer only after results are rendered
+            document.getElementById('footerCredit').style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // FIX MAJOR-8: confirmation before wiping results
+        function confirmRetake() {
+            if (confirm('Start over? Your current results will be cleared.')) {
+                location.reload();
+            }
+        }
+
+        // ─── Init ─────────────────────────────────────────────────────────
+        renderPages();
+
+        // Restore any saved answers from a previous partial session
+        if (loadSavedAnswers()) {
+            restoreUI();
+        }
+
+        // FIX MAJOR-5: warn before accidental navigation away mid-quiz
+        window.addEventListener('beforeunload', (e) => {
+            const hasAnswers = Object.keys(answers).length > 0;
+            const resultsShown = document.getElementById('results').style.display !== 'none';
+            if (hasAnswers && !resultsShown) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+    </script>
+</body>
+
+</html>
